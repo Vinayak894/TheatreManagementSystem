@@ -1,6 +1,7 @@
 package com.itvedant.theatre.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
@@ -47,7 +48,31 @@ public class SecurityConfiguration {
                     "/api/auth/register",
                     "/error"
                 ).permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                .requestMatchers("/api/admin/**")
+                    .hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.POST, "/api/movies")
+                    .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/movies/**")
+                    .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/movies/**")
+                    .hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.POST, "/api/screens")
+                    .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/screens/**")
+                    .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/screens/**")
+                    .hasRole("ADMIN")
+
+                .requestMatchers(HttpMethod.POST, "/api/theatres")
+                    .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.PUT, "/api/theatres/**")
+                    .hasRole("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, "/api/theatres/**")
+                    .hasRole("ADMIN")
+
                 .anyRequest().authenticated()
             )
             .httpBasic(Customizer.withDefaults())

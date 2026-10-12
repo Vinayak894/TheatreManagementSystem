@@ -3,9 +3,11 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +19,6 @@ import com.itvedant.theatre.repositories.MovieRepository;
 public class MovieController {
 
     private final MovieRepository movieRepository;
-
     public MovieController(MovieRepository movieRepository) {
         this.movieRepository = movieRepository;
     }
@@ -43,5 +44,37 @@ public class MovieController {
         }
 
         return ResponseEntity.notFound().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Movie> updateMovie(
+            @PathVariable Long id,
+            @RequestBody Movie movieDetails) {
+
+        Optional<Movie> existingMovie = movieRepository.findById(id);
+
+        if (existingMovie.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Movie movie = existingMovie.get();
+        movie.setTitle(movieDetails.getTitle());
+        movie.setGenre(movieDetails.getGenre());
+        movie.setDurationMinutes(movieDetails.getDurationMinutes());
+        movie.setLanguage(movieDetails.getLanguage());
+        movie.setDescription(movieDetails.getDescription());
+
+        Movie updatedMovie = movieRepository.save(movie);
+        return ResponseEntity.ok(updatedMovie);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteMovie(@PathVariable Long id) {
+        if (!movieRepository.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        movieRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
